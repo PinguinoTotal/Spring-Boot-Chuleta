@@ -87,3 +87,57 @@ Las dependencias son las "librerias que vamos a incorporar a nuestro proyecto, a
 
 ![Dependencies](img/dependencies.png)
 
+## Estructura del proyecto 
+
+tenemos en la carpeta src nuestro main, de la aplicacion, la aplicacion sabe que la aplicacion es en spring Boot por la anotacion @SpringBootAplication 
+
+
+![alt text](img/estructura.png)
+
+## Modelo MMC 
+
+El Modelo Vista Controlador, mejor conocido como MVC, es un patrón de diseño de software que permite una separacion entre la logica de negocio de una aplciación y la vista que se le presenta al usauario, utilizando como intermediario a un controlador que se encarga de tomar la decision de cómo interactuan la vista y el modelo entre si.
+
+En este patrón, el usuario realiza una peticion, un controlador la recibe y decide hacia donde debe ir la misma o qué acciones deben realizarse para emitir una respuesta.
+
+Cada una de las partes del patrón cumpele con una funcionalida en particular:
+
+Controlador: Se encarga de "Controlar" o hacer de intermediario; recibe las órdenes del usuario, solicita los adatos al modelo y se los comunica a la vista. Trbaja copmo si se tratara de un "pivote" que se encarga de distribuir las tareas. En SpringBoot se determina la clase controladora mediante la Annotation @RestController.
+
+Modelo: Se encarga del modelo de los datos. En él se encuentra generalmente la lógica de usuario y las fuentes de datos, como por ejemplo, el consumo de datos desde una base de datos en particular.
+
+Vista: Es la interfaz gráfica que se le presenta al usuario. Generalmente recibe datos provenientes del modelo a través del controlador y se los muestra al usuario en cuestión.
+
+![Modelo mvc](img/modeloMVC.png)
+
+## API 
+
+Permite que varias aplicaciones se puedan comunicar entre si, por más que estén desarrolladas en lenguajes de programacion completamente distintos.
+
+Los programadores backend son los que desarrollan las apis, creando endpoints, para que el front pueda comunicarse con el back 
+
+REST es un tipo de servicio que se caracteriza por no tener estado alguno y por lograr interconexiones mediante el protocolo HTTP con mensajes de tipo XML o JSON, la api necesita una serie de datos que yo le pase desde el front a traves de una solicitud, para poder trabajar desde la logica y poder regresarla.
+
+los navegadores se comunican por default con GET
+
+## Haciendo un controlador
+
+para hacer un controlador (para continuar con el modelo MVC) se crea un nuevo paquete de controladores y al principio de este debe ponerse @RestController para que pueda ser identificado como un controlador
+
+```java
+package com.todocodeacademy.prueba.controller;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+//se le pone Rest controller para que se identifique que es un controlador
+@RestController
+public class HellowController {
+
+    //@GetMapping es para procesar las peticiones Get
+    @GetMapping
+    public String sayHellow(){
+        return "Hola mundo";
+    }
+}
+```
