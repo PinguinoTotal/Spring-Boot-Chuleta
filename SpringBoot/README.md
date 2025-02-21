@@ -13,5 +13,5 @@ Una request que se lleva a cabo en una comunicación que utiliza el protocolo HT
 
     Body o cuerpo 
 
-![Request](D:/InterfazUser/Escritorio/SpringBoot-Chuleta/SpringBoot/img/request.png)
+![Request](img/request.png)
 
