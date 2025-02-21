@@ -23,15 +23,15 @@ son muy parecidos a las request, solo que tienen codigos de estatus (brindan un 
 
 Status Codes: Es un código particular que indica informacion particular sobre si se pudo concluir con la solicitud enviada o no. Este código, dependiendo del tipo que sea, puede comunicar diferentes situaciones. Entre los más comunes se encuntran:
 
-    100: Son respuesats de tipo informativas. Generalmente se utilizan para informar que una solicitud esta siendo procesada.
+100: Son respuesats de tipo informativas. Generalmente se utilizan para informar que una solicitud esta siendo procesada.
 
-    200: Se utiliza para comunicar que una solicitud fue procesada correctamente. El más conocido o utilizado es el 200 Success.
+200: Se utiliza para comunicar que una solicitud fue procesada correctamente. El más conocido o utilizado es el 200 Success.
 
-    300: Para informar que se producirá una redirección.
+300: Para informar que se producirá una redirección.
 
-    400: Son utilizados para representar errores causados principalmente por la solicutud del cliente. Entre los más conocidos se encuentra el famoso error 404 Not Found.
+400: Son utilizados para representar errores causados principalmente por la solicutud del cliente. Entre los más conocidos se encuentra el famoso error 404 Not Found.
 
-    500: Son utilizados para manifestar errores pero que fueron causados por el servidor, por ejemplo, si se producen errores de conexión, decaída momentánea de un recurso,. Uno de los más conocidos es el erroe 500 Internal Server Error.
+500: Son utilizados para manifestar errores pero que fueron causados por el servidor, por ejemplo, si se producen errores de conexión, decaída momentánea de un recurso,. Uno de los más conocidos es el erroe 500 Internal Server Error.
 
 Header o cabecera: Cumple con la misma función que en las request, conteniendo atributos o especificaciones necesarias para una correcta comunicación.
 
@@ -42,3 +42,48 @@ Body o cuerpo: Al igual que en las request, es un campo opcional con la finalida
 ## Métodos más comunes
 
 ![Metodos](img/metodos.png)
+
+## Librerias vs frameworks
+
+Las librerias son porciones de codigo que se pueden reutilizar, que alguien ya codifico y que pueden ser reutilizadas
+
+Los frameworks son entornos de desarrollo y buscan reducir el tiempo de desarrollo ocupando conjuntos de librerias y herramientas.
+
+![Frameworks y librerias](img/librerias_frameworks.png)
+
+## Maven 
+
+Es un gestor de librerias y dependencias sin necesidad de descargarla manualmente, es una herramienta de software para la géstion y construcción de proyecto Java que se caracteriza por tener un modelo de configuración muy simple. basado en el formato XML.
+
+,aven utiliza el conocido archivo POM.xml para dentro de él especificar las diferentes dependencias o librerías que serán necesarias incluir en el proyecto que se esté desarrollando 
+
+![GradleVsMaven](img/GradleVsMaven.png)
+
+## Spring Boot
+
+Spring Framework es un conjunto de proyectos open source desarrollados en Java con el objetivo de agilizar el proceso de desarrollo de aplciaciones.
+
+Cuenta con una cantidad de herramientas que tienen como objetivo facilitar el trabajo de los desarrolladores.
+
+Spring Boot es la herramienta para iniciar un proyecto web en spring, tiene un servidor embebido y ya la configuración por default.
+
+Spring Boot es una extensión del framework Spring que tiene como finalidad simplificar la creación y configuración inicial de aplicaciones web.
+
+Solo necesita una configuarcion basica, que permite el uso de librerias, integración ocn otras herramientras o incluso otros proyectos de Spring.
+
+## Inicializar nuestros proyectos 
+
+https://start.spring.io/ (aqui se inicializan los proyectos)
+
+Los proyectos de spring boot tienen una cierta arquitectura que se tiene que seguir, unas carperpetas y asi, por ende es necesario poner bien los metadatos, que son los campos a llenar dentro de Spring Initializr 
+
+Group: url de la aplicación, aqui es donde se va a guardar todo el proyecto (la url debe ir al revez)
+
+Artifact: Nombre que le queremos incorporar a nuestro proyecto 
+
+![Metadata](img/initizalizaer1.png)
+
+Las dependencias son las "librerias que vamos a incorporar a nuestro proyecto, aqui muestro las 2 primeras que son las más importantes y la de lombok es para no crear los seters ni geters dentro de nuestros programas 
+
+![Dependencies](img/dependencies.png)
+
