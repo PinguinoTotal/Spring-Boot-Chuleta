@@ -141,3 +141,321 @@ public class HellowController {
     }
 }
 ```
+
+## @GetMapping, @PathVariable y @PathVariable
+```java
+package com.todocodeacademy.prueba.controller;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+//se le pone Rest controller para que se identifique que es un controlador
+@RestController
+public class HellowController {
+
+    /*si ninguno tienen ("/hello") o similar el get nos llevara por
+    default a el metodo @GetMapping sin ()*/
+
+
+
+    //para pasar variables existen path variable y el request param
+
+    //@GetMapping es para procesar las peticiones Get
+    @GetMapping("/hello/{nombre}")
+    public String sayHellow(@PathVariable String nombre){
+        return "Hola mundo" + nombre;
+    }
+    //este metodo debe tener este url para ejecutarse
+    //localhost:8080/hello/un nombre
+
+    //al poner las barras le decimos que metodo debe ejecutar dependiendo lo que entre a la url
+
+    //Al poner Path Variable hacemos que el codigo espere la llegada de un valor por la url
+    @GetMapping("/bye/{nombre}/{edad}/{profesion}")
+    public String sayBye(@PathVariable String nombre,
+                         @PathVariable int edad,
+                         @PathVariable String profesion){
+        return "Bye World" + " nombre: " + nombre + " Edad: " + edad + "profesion" + profesion;
+    }
+    //este metodo debe tener este url para ejecutarse
+    //localhost:8080/hello/un nombre/una edad/ una profesion
+
+
+    //ahoria utilizamos el request param para que se envie todo el paquete
+    @GetMapping("/byebye")
+    public String sayByeRequestParam(@RequestParam String nombre,
+                                     @RequestParam int edad,
+                                     @RequestParam String profesion){
+        return "Bye World" + " nombre: " + nombre + " Edad: " + edad + "profesion" + profesion;
+    }
+    //este metodo debe tener este url para ejecutarse
+    //localhost:8080/hello?nombre=unNombre&edad=unaEdad&profesion=unaProfesion
+
+
+
+}
+```
+
+## JSON 
+
+Javascript Object Notation, es un lenguaje intermediario entre el back y el front 
+
+
+asi se definen los json, se distingue porque es una clave y un valor
+
+```JSON
+{   //asi se pone solo un parametro en json
+    "nombre": "Cristiano",
+    "apellido": "Ronaldo",
+    "edad": 36,
+    "equipo": ["Sporting Club", 
+                "Manchester United"]
+}
+```
+
+los corchetes significa que viene una lista, por ende podemos hacer esto:
+
+```JSON
+[{   //asi se pone solo un parametro en json
+    "nombre": "Cristiano",
+    "apellido": "Ronaldo",
+    "edad": 36,
+    "equipo": ["Sporting Club", 
+                "Manchester United"]
+},
+{   
+    "nombre": "Lionel",
+    "apellido": "Messi",
+    "edad": 34,
+    "equipo": ["Newrlls", 
+                "PSG"]
+}
+]
+```
+
+## Postman 
+
+es una plataforma para simular las peticiones al backend
+
+asi se hace un post, por medio del body de la request ya se utiliza dentro de nuestro back end, para decirlo de tra manera en el cuerpo de 
+nuestra request se manda el obketo cliente
+
+![Postman1](img/Postman1.png)
+
+
+## @PostMapping y @RequestBody
+```java
+package com.todocodeacademy.prueba.controller;
+
+import com.todocodeacademy.prueba.entitys.Cliente;
+import org.springframework.web.bind.annotation.*;
+
+//se le pone Rest controller para que se identifique que es un controlador
+@RestController
+public class HellowController {
+
+    //esto sirve para recibir las peticiones post
+    //al usar request body buscamos en el body de nuestra peticion
+    @PostMapping("/cliente")
+    public void CrearCliente(@RequestBody Cliente cliente){
+        System.out.println("Cliente creado");
+        System.out.println(cliente.getNombre());
+    }
+
+    
+}
+```
+
+## @ResponseBody + ResponseEntity
+```java
+package com.todocodeacademy.prueba.controller;
+
+import com.todocodeacademy.prueba.entitys.Cliente;
+import org.springframework.web.bind.annotation.*;
+
+//se le pone Rest controller para que se identifique que es un controlador
+@RestController
+package com.todocodeacademy.prueba.controller;
+
+import com.todocodeacademy.prueba.entitys.Cliente;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@RestController
+public class HellowController {
+
+    //esto es la base de datos improvisada, esto no es lo correcto
+
+    //ahora vamos a devolver datos
+
+    @GetMapping("/cliente/traer")
+    //responseBody se usa para indicar que devolvera algo en el cuerpo de la respuesta de la solicitud
+    @ResponseBody
+    public List<Cliente> traerCliente (){
+
+        List<Cliente> listaClientes = new ArrayList<Cliente>();
+        listaClientes.add(new Cliente(1L, "Zlatan", "Ibanover"));
+        listaClientes.add(new Cliente(2L, "Cristiano", "Ronaldo"));
+        listaClientes.add(new Cliente(3L, "Lionel", "Messi"));
+
+        return listaClientes;
+    }
+
+    @GetMapping("/pruebaresponse")
+    ResponseEntity<String> traerRespuesta(){
+        //aqui se hace una respuesta personalizada, aqui se fuerza un estatus 200
+        return new ResponseEntity<>("Esta es una prueba de response", HttpStatus.OK);
+        //asi que con esto se puede forzar diferentes estatus para que podamos responder de manera más correcta
+    }
+
+    
+}
+```
+## DTO data transfer object 
+
+es un patron de diseño, esto es para unificar las tablas que tiene desde el 
+lado del back. es una clase intermediaria, el dto sigue respondiendo lo mismo aunque 
+las clases se cambien  
+
+### Inquilino
+```java
+package com.todocodeacademy.prueba.entitys;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class Inquilino {
+
+    private Long id_inquilino;
+    private String dni;
+    private String nombre;
+    private String apellido;
+    private String profesion;
+
+    public Inquilino() {
+    }
+
+    public Inquilino(Long id_inquilino, String dni, String nombre, String apellido, String profesion) {
+        this.id_inquilino = id_inquilino;
+        this.dni = dni;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.profesion = profesion;
+    }
+}
+
+```
+
+### Propiedad
+```java
+package com.todocodeacademy.prueba.entitys;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class Propiedad {
+    private Long id_propiedad;
+    private String tipo_propiedad;
+    private String direccion;
+    private Double metros_cuadrados;
+    private Double valor_alquiler;
+
+    public Propiedad() {
+    }
+
+    public Propiedad(Long id_propiedad, String tipo_propiedad, String direccion, Double metros_cuadrados, Double valor_alquiler) {
+        this.id_propiedad = id_propiedad;
+        this.tipo_propiedad = tipo_propiedad;
+        this.direccion = direccion;
+        this.metros_cuadrados = metros_cuadrados;
+        this.valor_alquiler = valor_alquiler;
+    }
+}
+```
+
+### Clase dto que unifica las clases 
+```java
+package com.todocodeacademy.prueba.entitys;
+
+//Esta sera la clase DTO de propeidad, por ende tendra los valores de la propiedad, pero a la vez
+//tambien tendra informacion extra, ya que al ser un dto es la que junta esta informacion
+
+import lombok.Getter;
+import lombok.Setter;
+
+//sera una mezcla entre propiedad e inquilino
+@Getter
+@Setter
+public class PropiedadDTO {
+
+    private Long id_propiedad;
+    private String tipo_propiedad;
+    private String direccion;
+    private Double valor_alquiler;
+    private String nombre;
+    private String apellido;
+
+    public PropiedadDTO() {
+    }
+
+    public PropiedadDTO(Long id_propiedad, String tipo_propiedad, String direccion, Double valor_alquiler, String nombre, String apellido) {
+        this.id_propiedad = id_propiedad;
+        this.tipo_propiedad = tipo_propiedad;
+        this.direccion = direccion;
+        this.valor_alquiler = valor_alquiler;
+        this.nombre = nombre;
+        this.apellido = apellido;
+    }
+}
+
+```
+
+### Controlador que unifica las clases
+```java
+package com.todocodeacademy.prueba.controller;
+
+import com.todocodeacademy.prueba.entitys.Inquilino;
+import com.todocodeacademy.prueba.entitys.Propiedad;
+import com.todocodeacademy.prueba.entitys.PropiedadDTO;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+public class HellowController {
+
+    @GetMapping("/propiedad/{id}")
+    @ResponseBody
+    public PropiedadDTO devolverPropiedad(@PathVariable Long id){
+        //que a traves de la id buscamos la propiedad
+        //trajimos al inquilino asociado a esa propiedad
+
+        //esto es la simulacion de un objeto propiedad que nos trae la base de datos
+        Propiedad prop = new Propiedad(15487L, "Casa", "308 Negro Arroyo Lane", 2000.0, 40000.0 );
+
+        Inquilino inqui = new Inquilino(1L, "12345678", "Walter", "White", "Profesor de quimica");
+
+        PropiedadDTO propiDTO = new PropiedadDTO();
+
+        //asignamos los datoq ue necesitamos de propiedad
+        propiDTO.setId_propiedad(prop.getId_propiedad());
+        propiDTO.setTipo_propiedad(prop.getTipo_propiedad());
+        propiDTO.setDireccion(prop.getDireccion());
+        propiDTO.setValor_alquiler(prop.getValor_alquiler());
+        //asignamos los datos que necesitamos de inquilino
+        propiDTO.setNombre(inqui.getNombre());
+        propiDTO.setApellido(inqui.getApellido());
+
+        return propiDTO;
+    }
+}
+
+```
