@@ -459,3 +459,626 @@ public class HellowController {
 }
 
 ```
+
+## Arquitectura multicapas
+
+Es una manera de organizar el codigo que tenemos 
+
+tenemos algunos paquetes que son los mas prototipados en el desarrollo de software
+
+* Controller 
+  * Atiende las solicitudes http entrantes para derivar a la capa que corresponde y dar un resultado
+* Repository o DAO (Data Acces Object)
+  * Manejo de persistencia con los datos o con las bases de datos
+* Model (o Entity)
+  * Clases estandares que tiene el proyecto
+* DTO (Data Transfer Object)
+  * Todos los dto
+* Service
+  * trabaja todos loas pasos logicos de nuestro programa 
+
+### Arquitectura
+
+![multicapas](img/multicapas.png)
+
+## Arq.Multicapas: @Repository y @Service
+
+
+### Persona
+```java
+package com.todocodeacademy.prueba.model;
+
+import lombok.Getter;
+import lombok.Setter;
+
+//no es necesario poner algun tipo de anotacion a las clases porque se identifican por default
+@Getter
+@Setter
+public class Persona {
+    private Long id;
+    private String nombre;
+    private String apellido;
+
+    public Persona() {
+    }
+
+    public Persona(Long id, String nombre, String apellido) {
+        this.id = id;
+        this.nombre = nombre;
+        this.apellido = apellido;
+    }
+}
+```
+
+### PersonaRepository
+```java
+package com.todocodeacademy.prueba.repository;
+
+import org.springframework.stereotype.Repository;
+
+//al poner esta anotation le decimos que es un repositorio
+@Repository
+public class PersonaRepository {
+
+    //metodos para llamara a la base de datos, etc
+}
+
+```
+
+### PersonaService
+```java
+package com.todocodeacademy.prueba.service;
+
+import com.todocodeacademy.prueba.model.Persona;
+
+import java.util.List;
+
+public interface IPersonaService {
+
+    //esto se hace para separar los metodos propios y su implementacion
+    public void crearPersona(Persona per);
+
+    public List<Persona> traerPersonas();
+}
+```
+
+### IPersonaService
+```java
+package com.todocodeacademy.prueba.service;
+
+import com.todocodeacademy.prueba.model.Persona;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+//con la anotation le decimos que es un service
+@Service
+public class PersonaService implements IPersonaService {
+    //todos los metodos de logica de negocio
+
+    @Override
+    public void crearPersona(Persona per) {
+        System.out.println("Persona Creada");
+    }
+
+    @Override
+    public List<Persona> traerPersonas() {
+        //aca deberia ir la logica de devolver la lista de personas
+        return List.of();
+    }
+}
+```
+
+### Arquitectura del proyecto
+
+![Multicapas 2](img/Multicapas2.png)
+
+## Inyección de Dependencias 
+en ningun momento busca usar la palabra new para crear más clases si no que utiliza lo que ya tiene
+
+Su principal obketivo es el de mantener las capas de una aplicacion lo más desacopladas
+psoible entre si 
+
+Para poder lograr esto, la inyección de dependencias permite que cada una de las partes del programa 
+que se esté desarrollando sea independiente y que no se comuniquen entre si mediante instancias,
+sino mediante interfaces 
+
+cada vez que utilizamos el new es que creamos una nueva instancia de una clasem lo que se busca es no llenar
+la memoria de la aplicacion con clases
+
+se puede hacer inyeccion de dependencia mediante 
+
+* Constructores
+* Mediante setters
+* Mediante el @Autowired
+
+en esta ocacion veremos las 2 clases primeras
+
+Supongamos que tenemos el modelado de un lavadero de autos, donde existe una clkase llamda ServicioLavado de la cualdependen dos clases
+Servicio normal y Servicio Premiun 
+
+![Servicio Labado](img/ServicioLavado.png)
+
+### Clase ServicioLavado
+
+```java
+package com.todocodeacademy.prueba.model;
+
+public class ServicioLavado {
+    private ServicioNormal servicioNormal;
+    private ServicioPremiun servicioPremiun;
+
+    //inyeccion de dependencias en el constructor
+    public ServicioLavado(ServicioNormal servicioNormal, ServicioPremiun servicioPremiun) {
+        this.servicioNormal = servicioNormal;
+        this.servicioPremiun = servicioPremiun;
+    }
+
+    //inyeccion de dependencias por setters
+    public void setServicioNormal(ServicioNormal servicioNormal) {
+        this.servicioNormal = servicioNormal;
+    }
+
+    public void setServicioPremiun(ServicioPremiun servicioPremiun) {
+        this.servicioPremiun = servicioPremiun;
+    }
+}
+
+```
+
+las otras clases estan completamente vacias, solo se crearon, pero estan en blanco 
+
+
+## @Autowired
+
+Lo ideal debe ser generar la inyeccion al service y del service al repository, pero apra no tardar tanto en el ejemplo se salta directamente al repository
+
+![autowired](img/autowired.png)
+
+
+### AplicationController
+```java
+package com.todocodeacademy.prueba.controller;
+
+import com.todocodeacademy.prueba.model.Posteo;
+import com.todocodeacademy.prueba.repository.IPosteoRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+public class AplicacionController {
+
+    @Autowired
+    //llamamaos a la interfaz para que llame a la clase que la implementa
+    IPosteoRepository repo;
+
+    @GetMapping("/posteos")
+    public List<Posteo> traerTodos(){
+        return  repo.traerTodos();
+    }
+
+}
+
+```
+
+### Posteo
+```java
+package com.todocodeacademy.prueba.model;
+
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
+public class Posteo {
+
+    private Long id;
+    private String titulo;
+    private String autor;
+
+    public Posteo() {
+    }
+
+    public Posteo(Long id, String titulo, String autor) {
+        this.id = id;
+        this.titulo = titulo;
+        this.autor = autor;
+    }
+}
+
+```
+
+### PosteoRepository
+```java
+package com.todocodeacademy.prueba.repository;
+
+import com.todocodeacademy.prueba.model.Posteo;
+
+import java.util.List;
+
+public interface IPosteoRepository {
+
+    public List<Posteo> traerTodos();
+}
+
+```
+
+### IPosteoRepository
+```java
+package com.todocodeacademy.prueba.repository;
+import com.todocodeacademy.prueba.model.Posteo;
+import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.List;
+
+@Repository
+public class PosteoRepsitory implements IPosteoRepository{
+
+    @Override
+    public List<Posteo> traerTodos() {
+        List<Posteo> listaPosteos = new ArrayList<Posteo>();
+
+        listaPosteos.add(new Posteo(1L, "¿Como formatear una pec", "Luisina de Paula"));
+        listaPosteos.add(new Posteo(1L, "¿Como mantener la seguridad", "Gabriel Guismin"));
+
+        return listaPosteos;
+    }
+}
+
+```
+
+## ORM y JPA(Java persistence api)
+JPA es un ORM (Object Relational Mapping) que tiene como objetivo logarr la persistencia de datos entre una aplicacion desarrolladas
+en java y una base de datos
+
+hibernate es un proveedor de jpa 
+
+
+## Configuracion de Hibernate 
+
+se genera la configuracion inicial, en ese caso hibernate se encuentra en la parte de Spring Data JPA
+
+My SQL Driver es para tener un driver para sql y h2 Database es un sql embebido pequeño 
+![inizializerHibernate](img/inizializerHibernate.png)
+
+creamos la base de datos con la cual vamos a estar trabajando 
+
+![sql1](img/sql1.png)
+
+se deja vacio, solo se crea la base de datos ya que hibernate se debe de encargar de hacer las columnas necesaras para recibir 
+de manera correcta los datos que le pasaremos 
+
+ahora en el archivo de application properties vamos a poner las credenciales para que nuestro proyecto pueda conectarse a la base de datos 5 configuraciones
+
+```java
+spring.application.name=pruebaJPA
+
+//para hacer el mapeo de la base de datos debe borrar lo que ya hay ahi o que hacer
+//en este caso le decimos que lo actualice
+spring.jpa.hibernate.ddl-auto=update
+
+
+//url de nuestra base de datos
+//cual va a ser la base de datos a utilizar
+//y despues del ? es para eliminar el problema de la zona horaria
+spring.datasource.url=jdbc:mysql://localhost:3306/prueba_jpa?seSSL=false&serverTimezone=UTC
+
+//poner el nombre de usuario de la base de datos
+spring.datasource.username=root
+
+//poner la contraseña de la base de datos
+spring.datasource.password=
+
+//decirle en que dialecto se va a comunicar con la base de datos
+spring.jpa.database-platform=org.hibernate.dialect.MySQLDialect
+```
+
+despues de esto levantamos la aplicacion y revisamos ques e pueda acceder a ella, para eso podemos hacer uso de la base de datos que ya teniamos embebida en la configuracion de springBoot, haciendo que despues de que levantemos la aplicacion poner el URL: http://localhost:8080/h2-console Y y la configuramos con los valores que le metismos a properties, el nombre y contraseña es admin y ponemos Test Connection 
+
+![h2](img/h2.png)
+
+la aplciacion llenara la base de datos sin tener que meter ningun tipo de query 
+
+### Persona 
+```java
+package com.todocodeacademy.pruebaJPA.model;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+
+//con esta anotation le decimos que esto sera una tabla en la base de datos
+@Entity
+public class Persona {
+
+    //este sera la primary key
+    @Id
+    //esta se generarara de manera secuencial
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long id;
+    private String nombre;
+    private String apellido;
+    private int edad;
+
+    public Persona() {
+    }
+
+    public Persona(Long id, String nombre, String apellido, int edad) {
+        this.id = id;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.edad = edad;
+    }
+}
+```
+
+### IPersonaRepository 
+```java
+package com.todocodeacademy.pruebaJPA.repository;
+
+import com.todocodeacademy.pruebaJPA.model.Persona;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+
+//le decimos que sera un repositorio
+@Repository
+//aqui le decimos que extiende de una clase jpaRepository de Hibernate que ya se encarga de realizar la
+//persistencia de lso datos, por ende solo hayq ue darle algunos pocos de parametros, como que tipo de
+//entidad tenemos que eprsistir y de que tipo es su primary key
+public interface IPersonaRepository extends JpaRepository<Persona,Long> {
+}
+
+```
+
+### IPersonaService
+```java
+package com.todocodeacademy.pruebaJPA.service;
+
+public interface IPersonaService {
+}
+
+```
+
+### PersonaService
+```java
+package com.todocodeacademy.pruebaJPA.service;
+
+import com.todocodeacademy.pruebaJPA.repository.IPersonaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+@Service
+public class PersonaService {
+
+    //inyectamos la dependencia que ya interactua con la base de datos
+    @Autowired
+    private IPersonaRepository personaRepository;
+}
+
+```
+
+y queda de esta manera en el servidor, generando otra tabla de apoyo para la secuencia de los numeros que se le dara a nuestro id
+
+![baseDeDatos1](img/baseDeDatos1.png)
+
+## Creando un CRUD con JPA + Hibernate
+
+CRUD
+* Create
+* Read
+* Update
+* Delete
+
+### PersonaController
+```java
+package com.todocodeacademy.pruebaJPA.controller;
+
+import com.todocodeacademy.pruebaJPA.model.Persona;
+import com.todocodeacademy.pruebaJPA.service.IPersonaService;
+import com.todocodeacademy.pruebaJPA.service.PersonaService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+public class PersonaController {
+
+    @Autowired
+    IPersonaService personaService;
+
+    //obtener todas las personas
+    @GetMapping("/persona/traer")
+    public List<Persona> findAllPersonas(){
+        return personaService.getPersonas();
+    }
+
+    //creando una persona
+    @PostMapping("/persona/crear")
+    public String savePersona(@RequestBody Persona perso){
+        System.out.println("entrando al post");
+        personaService.savePersona(perso);
+        return "Persona creada con exito";
+    }
+
+    //eliminar persona
+    @DeleteMapping("/persona/borrar/{id}")
+    public String deletePersona(@PathVariable Long id){
+        personaService.deletePersona(id);
+        return "Persona eliminada con exito";
+    }
+
+    //obtener una sola persona
+    @GetMapping("/{id}")
+    public Persona findPersona(@PathVariable Long id){
+        return personaService.findPersona(id);
+    }
+
+    //editando una persona
+    @PutMapping("/persona/editar/{id_original}")
+    public Persona editPersona(@PathVariable Long id_original,
+                               //aqui especificamos que no es necesario introducir todos los valores
+                               @RequestParam(required = false, name="id") Long nuevaId,
+                               @RequestParam(required = false, name="nombre") String nuevoNombre,
+                               @RequestParam(required = false, name="apellido") String nuevoApellido,
+                               @RequestParam(required = false, name="edad") int nuevaEdad){
+
+        personaService.editPersona(id_original,nuevaId,nuevoNombre,nuevoApellido,nuevaEdad);
+
+        Persona persona = personaService.findPersona(nuevaId);
+
+        return persona;
+    }
+}
+
+```
+
+### Persona
+```java
+package com.todocodeacademy.pruebaJPA.model;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+
+@Entity
+public class Persona {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long id;
+    private String nombre;
+    private String apellido;
+    private int edad;
+
+    public Persona() {
+    }
+
+    public Persona(Long id, String nombre, String apellido, int edad) {
+        this.id = id;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.edad = edad;
+    }
+}
+
+```
+
+### IPersonaRepository
+```java
+package com.todocodeacademy.pruebaJPA.repository;
+
+import com.todocodeacademy.pruebaJPA.model.Persona;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+
+
+@Repository
+public interface IPersonaRepository extends JpaRepository<Persona,Long> {
+}
+
+```
+
+### IPersonaService
+```java
+package com.todocodeacademy.pruebaJPA.service;
+
+import com.todocodeacademy.pruebaJPA.model.Persona;
+
+import java.util.List;
+
+public interface IPersonaService {
+
+    //traer todas las personas
+    public List<Persona> getPersonas();
+
+    //guardar una persona
+    public void savePersona(Persona persona);
+
+    //eliminar persona
+    public void deletePersona(Long id);
+
+    //encontrar una sola persona
+    public Persona findPersona(Long id);
+
+    //modificar un registro de la manera más agresiva
+    public void editPersona(Long idOriginal, Long idNueva,
+                            String nuevoNombre,
+                            String nuevoApellido,
+                            int nuevaEdad);
+}
+
+```
+
+### PersonaService
+```java
+package com.todocodeacademy.pruebaJPA.service;
+
+import com.todocodeacademy.pruebaJPA.model.Persona;
+import com.todocodeacademy.pruebaJPA.repository.IPersonaRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class PersonaService implements IPersonaService{
+
+    @Autowired
+    private IPersonaRepository personaRepository;
+
+    @Override
+    public List<Persona> getPersonas() {
+        List<Persona> listaPersonas = personaRepository.findAll();
+        return listaPersonas;
+    }
+
+    @Override
+    public void savePersona(Persona persona) {
+        personaRepository.save(persona);
+    }
+
+    @Override
+    public void deletePersona(Long id) {
+        personaRepository.deleteById(id);
+    }
+
+    @Override
+    public Persona findPersona(Long id) {
+        //busca la persona y si no la encuentra regresa un null
+        return personaRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public void editPersona(Long idOriginal, Long idNueva, String nuevoNombre, String nuevoApellido, int nuevaEdad) {
+        Persona perso = this.findPersona(idOriginal);
+        if (perso!=null){
+            perso.setId(idNueva);
+            perso.setNombre(nuevoNombre);
+            perso.setApellido(nuevoApellido);
+            perso.setEdad(nuevaEdad);
+        }
+
+        this.savePersona(perso);
+    }
+}
+
+```
