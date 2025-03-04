@@ -880,6 +880,8 @@ CRUD
 * Update
 * Delete
 
+se tiene que recordar que el controller llama a el service que es el encargado de hacer la logica, luego el service llama al repository que es el encargado de hacer la eprsistencia de datos
+
 ### PersonaController
 ```java
 package com.todocodeacademy.pruebaJPA.controller;
@@ -1031,7 +1033,6 @@ public interface IPersonaService {
 ### PersonaService
 ```java
 package com.todocodeacademy.pruebaJPA.service;
-
 import com.todocodeacademy.pruebaJPA.model.Persona;
 import com.todocodeacademy.pruebaJPA.repository.IPersonaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1082,3 +1083,180 @@ public class PersonaService implements IPersonaService{
 }
 
 ```
+
+## Relaciones con JPA +Hibernate: @OneToOne + @OneToMany + @ManyToMany
+
+### @OneToOne (uno a uno)
+
+una persona solo puede tener una mascota, tenemos que ver de que lado tiene mpas sentido 
+saber los datos, por ejemplo, en este caso a quien le importa saber sobre la mascota?, a la persisona 
+
+### Persona
+```java
+package com.todocodeacademy.pruebaJPA.model;
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+
+@Entity
+public class Persona {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long id;
+    private String nombre;
+    private String apellido;
+    private int edad;
+
+    //esta sera la mascota que tiene la persona
+    //con el anotation le decimos que sea asi
+    @OneToOne
+    //join colum es para mapear de donde viene la referencia dada, y como debe de llamrase la columna en la base de datos
+    @JoinColumn(name = "una_mascota_id_mascota", referencedColumnName = "id_mascota")
+    private Mascota unaMascota;
+
+    public Persona() {
+    }
+
+    public Persona(Long id, String nombre, String apellido, int edad) {
+        this.id = id;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.edad = edad;
+    }
+}
+```
+
+### Mascota
+```java
+package com.todocodeacademy.pruebaJPA.model;
+
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
+
+@Entity
+public class Mascota {
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long id_mascota;
+    private String nombre;
+    private String especie;
+    private String raza;
+    private String color;
+
+    public Mascota(){
+
+    }
+
+    public Mascota(Long id_mascota, String nombre, String especie, String raza, String color) {
+        this.id_mascota = id_mascota;
+        this.nombre = nombre;
+        this.especie = especie;
+        this.raza = raza;
+        this.color = color;
+    }
+}
+```
+
+tambien tenemos que tener en cuenta que para poder actualizar las clases es posible 
+utilizar el save, ya que este sobreeescribe lo que tenemos en la base de datos 
+
+### @OneToMany
+
+una persona puede tener más de una mascota 
+
+### Mascota
+```java
+package com.todocodeacademy.pruebaJPA.model;
+
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
+
+@Entity
+public class Mascota {
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long id_mascota;
+    private String nombre;
+    private String especie;
+    private String raza;
+    private String color;
+
+    @ManyToOne
+    //le decimos que esta mascota (que sera parte de una lista de mascotas), tendra una persona asociada
+    //haciendo la relacion bidireccional
+    private Persona persona;
+
+    public Mascota(){
+
+    }
+
+    public Mascota(Long id_mascota, String nombre, String especie, String raza, String color) {
+        this.id_mascota = id_mascota;
+        this.nombre = nombre;
+        this.especie = especie;
+        this.raza = raza;
+        this.color = color;
+    }
+}
+
+```
+
+### Persona 
+```java
+package com.todocodeacademy.pruebaJPA.model;
+
+import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.util.List;
+
+@Getter
+@Setter
+
+@Entity
+public class Persona {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    private Long id;
+    private String nombre;
+    private String apellido;
+    private int edad;
+
+    //y tambien es importante recalcar que se hace atraves de una lista
+    //esto nos genera una tabla extra (si no le ponemos el many to one en la otra parte de la relacion )
+    @OneToMany
+    private List<Mascota> listaMascotas;
+
+    public Persona() {
+    }
+
+    public Persona(Long id, String nombre, String apellido, int edad) {
+        this.id = id;
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.edad = edad;
+    }
+}
+```
+
+### @ManyToMany
+![ManyToMany](img/ManyToMany.png)

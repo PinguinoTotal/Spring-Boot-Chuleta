@@ -5,25 +5,25 @@ pondre todos los temas que pueda de mis ejercicios echos en spring Boot para pod
 # Temas
 
 ## Spring Boot 
-[] Patrón MVC
+[X] Patrón MVC
 
-[] API Rest y endpoints
+[X] API Rest y endpoints
 
-[] Maven 
+[X] Maven 
 
-[] Parametros
+[X] Parametros
 
-[] Postman 
+[X] Postman 
 
-[] Arquitectura Multicapas
+[X] Arquitectura Multicapas
 
-[] Inversión de Control
+[X] Inversión de Control
 
-[] Inyección de dependencias
+[X] Inyección de dependencias
 
-[] Patrón DTO
+[X] Patrón DTO
 
-[]  JPA + Hibernate
+[X]  JPA + Hibernate
 
 ## Testing 
 

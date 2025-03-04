@@ -1,11 +1,10 @@
 package com.todocodeacademy.pruebaJPA.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -19,6 +18,11 @@ public class Persona {
     private String nombre;
     private String apellido;
     private int edad;
+
+    //y tambien es importante recalcar que se hace atraves de una lista
+    //esto nos genera una tabla extra (si no le ponemos el many to one en la otra parte de la relacion )
+    @OneToMany
+    private List<Mascota> listaMascotas;
 
     public Persona() {
     }
